@@ -3,6 +3,7 @@ class TasksController < ApplicationController
     request.body.rewind
 
     task_id = fetch_task_id
+    Rails.logger.info "TASK: #{task_id}"
     return head :no_content if task_id.nil?
 
     action = payload['action'].to_sym
