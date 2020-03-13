@@ -1,18 +1,35 @@
 require 'rest-client'
 
 class ClickUp
+  LABEL_MAPPING = {
+    nil => 'in development',
+    'Dev Review' => 'in dev review',
+    'QA Review' => 'in qa review',
+    'merged' => 'ready to deploy'
+  }
 
-  LABEL_MAPPING = { 'Dev Review' => 'in dev/testing', nil => 'backlog' }
+  def self.verify_task_id(task_id)
+    begin
+      response = request(task_id)
+      JSON.parse(response.body)['id']
+    rescue
+      nil
+    end
+  end
 
   def self.move_task(task_id, status)
+    request(task_id, status: LABEL_MAPPING[status])
+  end
+
+  def self.request(task_id, body={})
     ::RestClient::Request.execute(
       method: :put,
       url: "https://api.clickup.com/api/v1/task/#{task_id}",
       headers: {
-        'Authorization': 'pk_4404988_BR1FJXX02JELDZ8KDVCNOCV4RYT0P2YX',
+        'Authorization': ENV['API_KEY'],
         'Content-Type': 'application/json'
       },
-      payload: { status: LABEL_MAPPING[status] }
+      payload: body
     )
   end
 end
