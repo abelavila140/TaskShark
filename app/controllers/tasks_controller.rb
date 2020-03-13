@@ -31,7 +31,7 @@ class TasksController < ApplicationController
       branch_task_id = payload['pull_request']['head']['ref'].split('-').last
       return task_id if task_id = ClickUp.verify_task_id(branch_task_id)
 
-      branch_task_id = payload['pull_request']['title'][/(?<=<).*?(?=>)/]
+      branch_task_id = payload['pull_request']['title'].split('|').last.strip
       ClickUp.verify_task_id(branch_task_id)
     end
 end
