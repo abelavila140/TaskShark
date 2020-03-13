@@ -16,6 +16,7 @@ class TasksController < ApplicationController
       status = 'merged'
     end
 
+    Rails.logger.info "Action: #{action}"
     Rails.logger.info "Status: #{status}"
     ClickUp.move_task(task_id, status)
   end
