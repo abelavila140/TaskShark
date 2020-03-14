@@ -11,9 +11,9 @@ class ClickUp
   def self.verify_task_id(task_id)
     begin
       response = request(task_id)
-      JSON.parse(response.body)['id']
+      JSON.parse(response.body)
     rescue
-      nil
+      {}
     end
   end
 
@@ -26,8 +26,8 @@ class ClickUp
       method: :put,
       url: "https://api.clickup.com/api/v1/task/#{task_id}",
       headers: {
-        'Authorization': ENV['API_KEY'],
-        'Content-Type': 'application/json'
+        'Authorization' => ENV['API_KEY'],
+        'Content-Type' => 'application/json'
       },
       payload: body
     )
