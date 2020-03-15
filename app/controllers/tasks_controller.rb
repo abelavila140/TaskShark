@@ -3,9 +3,11 @@ class TasksController < ApplicationController
     request.body.rewind
 
     event_type = request.headers['X-GitHub-Event'].to_sym
-    self.send(event_type) rescue nil
-
-    head :no_content, json: "Event not allowed"
+    begin
+      self.send(event_type)
+    rescue
+      head :no_content
+    end
   end
 
   def pull_request
@@ -32,19 +34,19 @@ class TasksController < ApplicationController
 
     branch = payload['ref'].gsub('refs/heads/', '')
     task_payload = task_payload(branch, true)
-    return head :no_content, json: "No Task ID" if task_payload['id']
+    return head :no_content, json: "No Task ID" unless task_payload['id']
 
     repo = payload['repository']['full_name']
     body = {
       title: task_payload['name'],
       head: branch,
       base: 'master',
-      body: "/n/nTasks Details: #{task_payload['url']}"
+      body: "[content]\r\n\r\nTasks Details: #{task_payload['url']}"
     }
 
-    GitHub.create_pull_request(repo, body)
+    Github.create_pull_request(repo, body)
 
-    head :ok, json: "Pull Request Created"
+    render :ok, json: { body: "Pull Request Created" }
   end
 
   private

@@ -1,5 +1,5 @@
 class Github
-  def self.create_pull_request(repo, body)
+  def self.create_pull_request(repo, body={})
     ::RestClient::Request.execute(
       method: :post,
       url: "https://api.github.com/repos/#{repo}/pulls",
@@ -7,7 +7,7 @@ class Github
         'Authorization': "token #{ENV['GITHUB_TOKEN']}",
         'Content-Type': 'application/json'
       },
-      payload: body
+      payload: body.to_json
     )
   end
 end
