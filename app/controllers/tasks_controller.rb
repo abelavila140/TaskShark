@@ -40,9 +40,10 @@ class TasksController < ApplicationController
     logger.debug "I have a task! #{task_payload['id']}"
 
     repo = payload['repository']['full_name']
+    organization = repo.split('/').first
     body = {
       title: task_payload['name'],
-      head: branch,
+      head: "#{organization}:#{branch}",
       base: 'master',
       body: "/n/nTasks Details: #{task_payload['url']}"
     }

@@ -8,7 +8,7 @@ class Github
       url: "https://api.github.com/repos/#{repo}/pulls",
       headers: {
        #'Authorization': "token #{ENV['GITHUB_TOKEN']}",
-        'Authorization': "token 106777b185dc928aaf4e23fb7c8f5cac01e9480e",
+        'Authorization': "token 7aead624f2e6823be7617cc26f5372b13f2c6b6f",
         'Content-Type': 'application/json'
       },
       payload: body
