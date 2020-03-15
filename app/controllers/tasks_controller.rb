@@ -4,8 +4,6 @@ class TasksController < ApplicationController
 
     event_type = request.headers['X-GitHub-Event'].to_sym
     self.send(event_type) rescue nil
-
-    head :no_content, json: "Event not allowed"
   end
 
   def pull_request
@@ -28,11 +26,18 @@ class TasksController < ApplicationController
   end
 
   def push
+    logger.debug "Made it to the push method"
     return head :no_content unless first_push?
 
+    logger.debug "This is the first push"
+
+
     branch = payload['ref'].gsub('refs/heads/', '')
+    logger.debug "Branch: #{branch}"
     task_payload = task_payload(branch, true)
-    return head :no_content, json: "No Task ID" if task_payload['id']
+    return head :no_content, json: "No Task ID" unless task_payload['id']
+
+    logger.debug "I have a task! #{task_payload['id']}"
 
     repo = payload['repository']['full_name']
     body = {
@@ -41,10 +46,17 @@ class TasksController < ApplicationController
       base: 'master',
       body: "/n/nTasks Details: #{task_payload['url']}"
     }
-
-    GitHub.create_pull_request(repo, body)
-
-    head :ok, json: "Pull Request Created"
+    logger.debug "!!!!!!!!!!!!!!!"
+    logger.debug "#{repo}, #{body}"
+    resp = Github.create_pull_request(repo, body)
+    logger.debug "!!!!!!!!!!!!!!!"
+    logger.debug "!!!!!!!!!!!!!!!"
+    logger.debug "!!!!!!!!!!!!!!!"
+    logger.debug JSON.parse(resp.body).inspect
+    logger.debug "!!!!!!!!!!!!!!!"
+    logger.debug "!!!!!!!!!!!!!!!"
+    logger.debug "!!!!!!!!!!!!!!!"
+    return head :ok, json: "Pull Request Created"
   end
 
   private

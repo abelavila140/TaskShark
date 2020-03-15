@@ -26,7 +26,8 @@ class ClickUp
       method: :put,
       url: "https://api.clickup.com/api/v1/task/#{task_id}",
       headers: {
-        'Authorization' => ENV['API_KEY'],
+        #'Authorization' => ENV['API_KEY'],
+        'Authorization' => 'pk_4404988_BR1FJXX02JELDZ8KDVCNOCV4RYT0P2YX',
         'Content-Type' => 'application/json'
       },
       payload: body
