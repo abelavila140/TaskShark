@@ -55,8 +55,7 @@ class TasksController < ApplicationController
     logger.debug "!!!!!!!!!!!!!!!"
     logger.debug JSON.parse(resp.body).inspect
     logger.debug "!!!!!!!!!!!!!!!"
-    logger.debug "!!!!!!!!!!!!!!!"
-    logger.debug "!!!!!!!!!!!!!!!"
+
     return head :ok, json: "Pull Request Created"
   end
 
