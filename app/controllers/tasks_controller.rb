@@ -5,7 +5,7 @@ class TasksController < ApplicationController
     event_type = request.headers['X-GitHub-Event'].to_sym
     self.send(event_type) rescue nil
 
-    head :method_not_allowed
+    head :no_content, json: "Event not allowed"
   end
 
   def pull_request
@@ -32,7 +32,7 @@ class TasksController < ApplicationController
 
     branch = payload['ref'].gsub('refs/heads/', '')
     task_payload = task_payload(branch, true)
-    return head :no_content if task_payload['id']
+    return head :no_content, json: "No Task ID" if task_payload['id']
 
     repo = payload['repository']['full_name']
     body = {
