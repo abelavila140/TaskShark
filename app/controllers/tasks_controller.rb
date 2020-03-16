@@ -86,7 +86,7 @@ class TasksController < ApplicationController
     end
 
     def fetch_username
-      username = payload['pull_request']['user']['login']
+      username = payload['sender']['login']
       ClickUp::USERS.keys.include?(username) ? username : 'default'
     end
 end
