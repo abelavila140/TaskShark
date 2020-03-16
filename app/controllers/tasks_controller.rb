@@ -11,6 +11,8 @@ class TasksController < ApplicationController
   end
 
   def pull_request
+    logger.info "IN PR"
+
     task_payload = task_payload(payload['pull_request']['head']['ref'])
     task_id = task_payload['id']
     return head :no_content if task_id.nil?
@@ -25,13 +27,13 @@ class TasksController < ApplicationController
       labels.each { |label| status = label['name'] if label_in_hash?(label['name']) }
     end
 
-    logger.debug "STATUS: #{status}"
+    logger.info "STATUS: #{status}"
     current_status = ClickUp::LABELS.invert[task_payload['status']['status']]
-    logger.debug "CURRENT STATUS: #{current_status}"
+    logger.info "CURRENT STATUS: #{current_status}"
 
     return head :no_content if current_status == status
 
-    logger.debug "User: #{fetch_username}"
+    logger.info "User: #{fetch_username}"
     ClickUp.move_task(task_id, fetch_username, status)
 
     head :ok, json: "Status Changed"
