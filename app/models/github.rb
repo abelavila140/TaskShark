@@ -13,7 +13,7 @@ class Github
       method: :post,
       url: "https://api.github.com/repos/#{repo}/pulls",
       headers: {
-        'Authorization': "token #{token(username])}",
+        'Authorization': "token #{token(username)}",
         'Content-Type': 'application/json'
       },
       payload: body.to_json
