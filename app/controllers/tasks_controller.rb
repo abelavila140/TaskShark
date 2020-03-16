@@ -42,7 +42,7 @@ class TasksController < ApplicationController
 
     username = payload['pusher']['name']
     repo = payload['repository']['full_name']
-    organization = repp.split('/').first
+    organization = repo.split('/').first
 
     body = {
       title: task_payload['name'],
