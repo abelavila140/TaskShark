@@ -42,6 +42,7 @@ class TasksController < ApplicationController
 
   def push
     logger.debug "Pushed"
+    logger.debug first_push?.inspect
     return head :no_content unless first_push?
 
     branch = payload['ref'].gsub('refs/heads/', '')
