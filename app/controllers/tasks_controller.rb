@@ -82,8 +82,10 @@ class TasksController < ApplicationController
     end
 
     def task_payload(branch, is_push=false)
+      logger.info "task_payload"
       branch_task_id = branch.split('-').last
       task = ClickUp.verify_task_id(branch_task_id)
+      logger.info task.inspect
       return task if task.present? || is_push
 
       branch_task_id = payload['pull_request']['title'].split('|').last.strip
