@@ -15,6 +15,7 @@ class TasksController < ApplicationController
 
     task_payload = task_payload(payload['pull_request']['head']['ref'])
     task_id = task_payload['id']
+    logger.info task_id
     return head :no_content if task_id.nil?
 
     action = payload['action'].to_sym

@@ -31,10 +31,10 @@ class ClickUp
   end
 
   def self.move_task(task_id, username, status)
-    request(task_id, status: LABELS[status])
+    request(task_id, username, status: LABELS[status])
   end
 
-  def self.request(task_id, body={})
+  def self.request(task_id, username='default', body={})
     ::RestClient::Request.execute(
       method: :put,
       url: "https://api.clickup.com/api/v1/task/#{task_id}",
