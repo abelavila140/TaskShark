@@ -11,7 +11,8 @@ class TasksController < ApplicationController
   end
 
   def pull_request
-    task_id = task_payload(payload['pull_request']['head']['ref'])['id']
+    task_payload = task_payload(payload['pull_request']['head']['ref'])
+    task_id = task_payload['id']
     return head :no_content if task_id.nil?
 
     action = payload['action'].to_sym
@@ -24,7 +25,10 @@ class TasksController < ApplicationController
       labels.each { |label| status = label['name'] if label_in_hash?(label['name']) }
     end
 
-    ClickUp.move_task(task_id, status)
+    current_status = ClickUp::LABELS.invert[task_payload['status']['status']]
+    return head :no_content if current_status == status
+
+    ClickUp.move_task(task_id, fetch_username, status)
 
     head :ok, json: "Status Changed"
   end
@@ -36,15 +40,18 @@ class TasksController < ApplicationController
     task_payload = task_payload(branch, true)
     return head :no_content, json: "No Task ID" unless task_payload['id']
 
+    username = payload['pusher']['name']
     repo = payload['repository']['full_name']
+    organization = repp.split('/').first
+
     body = {
       title: task_payload['name'],
-      head: branch,
+      head: "#{organization}:#{branch}",
       base: 'master',
       body: "[content]\r\n\r\nTasks Details: #{task_payload['url']}"
     }
 
-    Github.create_pull_request(repo, body)
+    Github.create_pull_request(repo, username, body)
 
     render :ok, json: { body: "Pull Request Created" }
   end
@@ -55,7 +62,7 @@ class TasksController < ApplicationController
     end
 
     def label_in_hash?(name)
-      ClickUp::LABEL_MAPPING.keys.include?(name)
+      ClickUp::LABELS.keys.include?(name)
     end
 
     def task_payload(branch, is_push=false)
@@ -69,5 +76,10 @@ class TasksController < ApplicationController
 
     def first_push?
       payload['before'].gsub('0', '').blank?
+    end
+
+    def fetch_username
+      username = payload['pull_request']['user']['login']
+      ClickUp::USERS.keys.include?(username) ? username : 'default'
     end
 end

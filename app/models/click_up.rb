@@ -1,11 +1,24 @@
 require 'rest-client'
 
 class ClickUp
-  LABEL_MAPPING = {
+  LABELS = {
     nil => 'in development',
     'Dev Review' => 'in dev review',
     'QA Review' => 'in qa review',
     'merged' => 'ready to deploy'
+  }
+
+  USERS = {
+    'abelavila140' => 'ABEL',
+    'bzuch' => 'BRENT',
+    'raywagner88' => 'RAY',
+    'xdega' => 'LIAM',
+    'RCCAMER' => 'RYAN',
+    'bradleyaellis' => 'BRAD',
+    'kfindall' => 'KAMI',
+    'kinginmn' => 'GRETCHEN',
+    'dcoxjr' => 'DOUG',
+    'default' => 'ABEL'
   }
 
   def self.verify_task_id(task_id)
@@ -17,8 +30,8 @@ class ClickUp
     end
   end
 
-  def self.move_task(task_id, status)
-    request(task_id, status: LABEL_MAPPING[status])
+  def self.move_task(task_id, username, status)
+    request(task_id, status: LABELS[status])
   end
 
   def self.request(task_id, body={})
@@ -26,10 +39,14 @@ class ClickUp
       method: :put,
       url: "https://api.clickup.com/api/v1/task/#{task_id}",
       headers: {
-        'Authorization' => ENV['API_KEY'],
+        'Authorization' => token(username),
         'Content-Type' => 'application/json'
       },
       payload: body
     )
+  end
+
+  def self.token(username)
+    ENV["#{USERS[username]}_CLICK_UP_TOKEN"]
   end
 end
