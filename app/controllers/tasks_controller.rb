@@ -47,7 +47,7 @@ class TasksController < ApplicationController
 
     branch = payload['ref'].gsub('refs/heads/', '')
     task_payload = task_payload(branch, true)
-    logger.info "Branch : #{brancj}"
+    logger.info "Branch : #{branch}"
     logger.info "Task: #{task_payload['id']}"
     return head :no_content, json: "No Task ID" unless task_payload['id']
 
