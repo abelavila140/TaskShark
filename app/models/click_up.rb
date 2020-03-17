@@ -18,7 +18,7 @@ class ClickUp
     'kfindall' => 'KAMI',
     'kinginmn' => 'GRETCHEN',
     'dcoxjr' => 'DOUG',
-    'mclark-syc' => 'MARY'
+    'mclark-syc' => 'MARY',
     'default' => 'ABEL'
   }
 
