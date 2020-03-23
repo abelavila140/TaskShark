@@ -25,10 +25,8 @@ class ClickUp
   def self.verify_task_id(task_id)
     begin
       response = request(:get, task_id)
-      Rails.logger.debug "#{response}"
       JSON.parse(response.body)
     rescue
-      Rails.logger.info "This failed"
       {}
     end
   end
@@ -41,7 +39,7 @@ class ClickUp
     request(:post, "#{task_id}/field/#{field_id}", username, value: url)
   end
 
-  def self.request(method, path, username='default', options={})
+  def self.request(method, path, username='default', body={})
     ::RestClient::Request.execute(
       method: method,
       url: "https://api.clickup.com/api/v2/task/#{path}",
