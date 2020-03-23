@@ -33,10 +33,8 @@ class TasksController < ApplicationController
     current_status = ClickUp::LABELS.invert[@task_payload['status']['status']]
     logger.info "CURRENT STATUS: #{current_status}"
 
-    return head :no_content if current_status == status
-
     logger.info "User: #{fetch_username}"
-    ClickUp.move_task(task_id, fetch_username, status)
+    ClickUp.move_task(task_id, fetch_username, status) unless current_status == status
     ClickUp.attach_github_pr(task_id, username, github_url) unless attached_pr?
 
     head :ok, json: "Status Changed"
