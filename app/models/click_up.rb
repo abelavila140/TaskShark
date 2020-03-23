@@ -25,8 +25,10 @@ class ClickUp
   def self.verify_task_id(task_id)
     begin
       response = request(:get, task_id)
+      Rails.logger.debug "#{response}"
       JSON.parse(response.body)
     rescue
+      Rails.logger.info "This failed"
       {}
     end
   end
