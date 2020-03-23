@@ -24,7 +24,7 @@ class ClickUp
 
   def self.verify_task_id(task_id)
     begin
-      response = request(task_id)
+      response = request(:get, task_id)
       JSON.parse(response.body)
     rescue
       {}
@@ -32,13 +32,17 @@ class ClickUp
   end
 
   def self.move_task(task_id, username, status)
-    request(task_id, username, status: LABELS[status])
+    request(:put, task_id, username, status: LABELS[status])
   end
 
-  def self.request(task_id, username='default', body={})
+  def self.attach_gitub_url(task_id, username, url)
+    request(:post, "#{task_id}/field/#{field_id}", username, value: url)
+  end
+
+  def self.request(method, path, username='default', options={})
     ::RestClient::Request.execute(
-      method: :put,
-      url: "https://api.clickup.com/api/v1/task/#{task_id}",
+      method: method,
+      url: "https://api.clickup.com/api/v2/task/#{path}",
       headers: {
         'Authorization' => token(username),
         'Content-Type' => 'application/json'
@@ -49,5 +53,9 @@ class ClickUp
 
   def self.token(username)
     ENV["#{USERS[username]}_CLICK_UP_TOKEN"]
+  end
+
+  def self.field_id
+    "0233f3a9-3780-4357-95a9-b305216fee84"
   end
 end

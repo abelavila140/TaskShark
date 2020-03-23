@@ -13,13 +13,14 @@ class TasksController < ApplicationController
   def pull_request
     logger.info "IN PR"
 
-    task_payload = task_payload(payload['pull_request']['head']['ref'])
-    task_id = task_payload['id']
+    @task_payload = task_payload(payload['pull_request']['head']['ref'])
+    task_id = @task_payload['id']
     logger.info task_id
     return head :no_content if task_id.nil?
 
     action = payload['action'].to_sym
     labels = payload['pull_request']['labels'] || []
+    github_url = payload['pull_request']['html_url']
     status = nil
 
     if action == :closed
@@ -29,13 +30,14 @@ class TasksController < ApplicationController
     end
 
     logger.info "STATUS: #{status}"
-    current_status = ClickUp::LABELS.invert[task_payload['status']['status']]
+    current_status = ClickUp::LABELS.invert[@task_payload['status']['status']]
     logger.info "CURRENT STATUS: #{current_status}"
 
     return head :no_content if current_status == status
 
     logger.info "User: #{fetch_username}"
     ClickUp.move_task(task_id, fetch_username, status)
+    ClickUp.attach_github_pr(task_id, username, github_url) unless attached_pr?
 
     head :ok, json: "Status Changed"
   end
@@ -46,20 +48,20 @@ class TasksController < ApplicationController
     return head :no_content unless first_push?
 
     branch = payload['ref'].gsub('refs/heads/', '')
-    task_payload = task_payload(branch, true)
+    @task_payload = task_payload(branch, true)
     logger.info "Branch : #{branch}"
-    logger.info "Task: #{task_payload['id']}"
-    return head :no_content, json: "No Task ID" unless task_payload['id']
+    logger.info "Task: #{@task_payload['id']}"
+    return head :no_content, json: "No Task ID" unless @task_payload['id']
 
     username = payload['pusher']['name']
     repo = payload['repository']['full_name']
     organization = repo.split('/').first
 
     body = {
-      title: task_payload['name'],
+      title: @task_payload['name'],
       head: "#{organization}:#{branch}",
       base: 'master',
-      body: "[content]\r\n\r\nTasks Details: #{task_payload['url']}"
+      body: "[content]\r\n\r\nTasks Details: #{@task_payload['url']}"
     }
 
     logger.info "username: #{username}"
@@ -99,5 +101,9 @@ class TasksController < ApplicationController
     def fetch_username
       username = payload['sender']['login']
       ClickUp::USERS.keys.include?(username) ? username : 'default'
+    end
+
+    def attached_pr?
+      @task_payload['custom_fields'].find { |fields| fields['id'] == ClickUp.field_id }['value']
     end
 end
