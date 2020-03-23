@@ -88,7 +88,7 @@ class TasksController < ApplicationController
       logger.info task.inspect
       return task if task.present?
 
-      branch_task_id = branch.split('#', 2).last
+      branch_task_id = branch.split('-cp').last
       task = ClickUp.verify_task_id(branch_task_id)
       return task if task.present? || is_push
 
