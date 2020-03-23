@@ -35,7 +35,7 @@ class ClickUp
     request(:put, task_id, username, status: LABELS[status])
   end
 
-  def self.attach_gitub_url(task_id, username, url)
+  def self.attach_github_url(task_id, username, url)
     request(:post, "#{task_id}/field/#{field_id}", username, value: url)
   end
 
