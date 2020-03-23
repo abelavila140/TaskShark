@@ -3,6 +3,7 @@ require 'rest-client'
 class ClickUp
   LABELS = {
     nil => 'in development',
+    'backlog' => 'backlog',
     'Dev Review' => 'in dev review',
     'QA Review' => 'in qa review',
     'merged' => 'ready to deploy'
