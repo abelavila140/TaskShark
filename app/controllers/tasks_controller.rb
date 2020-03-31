@@ -21,11 +21,14 @@ class TasksController < ApplicationController
     action = payload['action'].to_sym
     labels = payload['pull_request']['labels'] || []
     github_url = payload['pull_request']['html_url']
+    pr_state = payload['pull_request']['state'].to_sym
     status = nil
 
     if action == :closed
       status = 'merged'
     else
+      return head :no_content if pr_state == :closed
+
       labels.each { |label| status = label['name'] if label_in_hash?(label['name']) }
     end
 
