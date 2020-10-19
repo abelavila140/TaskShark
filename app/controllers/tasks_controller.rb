@@ -41,11 +41,10 @@ class TasksController < ApplicationController
     ClickUp.attach_github_url(task_id, fetch_username, github_url) unless attached_pr?
 
     # Check if all subtasks are in QA review
+    label_names = labels.map { |l| l['name'] }
     logger.info "LABELS!!!"
     logger.info label_names.inspect
     logger.info @task_payload['parent']
-
-    label_names = labels.map { |l| l['name'] }
     return head :ok unless label_names.include?('QA Review') && @task_payload['parent']
 
     logger.info "LETS MOVE SOME STUFF!"
