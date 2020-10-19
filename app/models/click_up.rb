@@ -24,19 +24,17 @@ class ClickUp
   }
 
   def self.verify_task_id(task_id)
-    begin
-      response = request(:get, "task/#{task_id}")
-      a = JSON.parse(response.body)
-      Rails.logger.info "DTA MAN"
-      Rails.logger.info a.inspect
-      a
-    rescue
-      {}
-    end
+    response = request(:get, "task/#{task_id}")
+    JSON.parse(response.body)
+  rescue
+    {}
   end
 
   def self.subtasks(list_id, task_id)
-    request(:get, "list/#{list_id}/task?parent=#{task_id}")
+    response = request(:get, "list/#{list_id}/task?parent=#{task_id}")
+    JSON.parse(response.body)
+  rescue
+    {}
   end
 
   def self.move_task(task_id, username, status)
