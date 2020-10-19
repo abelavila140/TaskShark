@@ -54,6 +54,8 @@ class TasksController < ApplicationController
     move_parent_task = true
 
     logger.info "Parent - #{parent_task['id']}"
+    logger.info subtasks.inspect
+    logger.info "SUBTASKs ABOVE ^^^^"
 
     subtasks.each do |subtask|
       tags = subtask['tags'].map { |t| t['name'] }
