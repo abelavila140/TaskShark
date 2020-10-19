@@ -42,7 +42,7 @@ class TasksController < ApplicationController
 
     # Check if all subtasks are in QA review
     logger.info "LABELS!!!"
-    logger.info labels.inspect
+    logger.info label_names.inspect
     logger.info @task_payload['parent']
 
     label_names = labels.map { |l| l['name'] }

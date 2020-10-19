@@ -26,7 +26,10 @@ class ClickUp
   def self.verify_task_id(task_id)
     begin
       response = request(:get, "task/#{task_id}")
-      JSON.parse(response.body)
+      a = JSON.parse(response.body)
+      Rails.logger.info "DTA MAN"
+      Rails.logger.info a.inspect
+      a
     rescue
       {}
     end
