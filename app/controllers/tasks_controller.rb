@@ -42,9 +42,6 @@ class TasksController < ApplicationController
 
     # Check if all subtasks are in QA review
     label_names = labels.map { |l| l['name'] }
-    logger.info "LABELS!!!"
-    logger.info label_names.inspect
-    logger.info @task_payload['parent']
     return head :ok unless label_names.include?('QA Review') && @task_payload['parent']
 
     logger.info "LETS MOVE SOME STUFF!"
@@ -53,14 +50,8 @@ class TasksController < ApplicationController
     subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])['tasks']
     move_parent_task = true
 
-    logger.info "Parent - #{parent_task['id']}"
-    logger.info subtasks.inspect
-    logger.info "SUBTASKs ABOVE ^^^^"
-
     subtasks.each do |subtask|
       tags = subtask['tags'].map { |t| t['name'] }
-      logger.info "SUBTASK - #{subtask['id']}"
-      logger.info tags.inspect
       next unless (tags & ['frontend', 'api', 'legacy']).present?
 
       move_parent_task = false unless subtask['status']['status'] == 'in qa review'
