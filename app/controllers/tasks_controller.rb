@@ -50,7 +50,7 @@ class TasksController < ApplicationController
     logger.info "LETS MOVE SOME STUFF!"
 
     parent_task = ClickUp.verify_task_id(@task_payload['parent'])
-    subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])
+    subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])['tasks']
     move_parent_task = true
 
     logger.info "Parent - #{parent_task['id']}"
