@@ -41,19 +41,31 @@ class TasksController < ApplicationController
     ClickUp.attach_github_url(task_id, fetch_username, github_url) unless attached_pr?
 
     # Check if all subtasks are in QA review
+    logger.info "LABELS!!!"
+    logger.info labels.inspect
+    logger.info @task_payload['parent']
+
     return head :ok unless labels.include?('QA Review') && @task_payload['parent']
+
+    logger.info "LETS MOVE SOME STUFF!"
 
     parent_task = ClickUp.verify_task_id(@task_payload['parent'])
     subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])
     move_parent_task = true
 
+    logger.info "Parent - #{parent_task['id']}"
+
     subtasks.each do |subtask|
       tags = subtask['tags'].map { |t| t['name'] }
+      logger.info "SUBTASK - #{subtask['id']}"
+      logger.info tags.inspect
       next unless (tags & ['frontend', 'api', 'legacy']).present?
 
       move_parent_task = false unless subtask['status']['status'] == 'in qa review'
     end
 
+    logger.info "MOVE PARENT? #{move_parent_task}"
+    logger.info move_parent_task.inspect
     ClickUp.move_task(parent_task['id'], fetch_username, 'QA Review') if move_parent_task
 
     head :ok, json: "Status Changed"
