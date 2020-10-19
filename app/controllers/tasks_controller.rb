@@ -46,7 +46,7 @@ class TasksController < ApplicationController
     logger.info @task_payload['parent']
 
     label_names = labels.map { |l| l['name'] }
-    return head :ok unless labels.include?('QA Review') && @task_payload['parent']
+    return head :ok unless label_names.include?('QA Review') && @task_payload['parent']
 
     logger.info "LETS MOVE SOME STUFF!"
 
