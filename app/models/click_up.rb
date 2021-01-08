@@ -14,7 +14,7 @@ class ClickUp
     'bzuch' => 'BRENT',
     'raywagner88' => 'RAY',
     'xdega' => 'LIAM',
-    'WebDesignsByAmy' => 'AMY',
+    'suttonal' => 'AMY',
     'bradleyaellis' => 'BRAD',
     'kfindall' => 'KAMI',
     'kinginmn' => 'GRETCHEN',

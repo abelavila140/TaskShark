@@ -3,7 +3,7 @@ class Github
     'abelavila140' => 'ABEL',
     'bzuch' => 'BRENT',
     'raywagner88' => 'RAY',
-    'WebDesignsByAmy' => 'AMY',
+    'suttonal' => 'AMY',
     'bradleyaellis' => 'BRAD'
   }
 
