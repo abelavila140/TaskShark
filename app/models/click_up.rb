@@ -1,9 +1,18 @@
 require 'rest-client'
 
 class ClickUp
+  STATUSES = {
+    'backlog' => 0,
+    'in development' => 1,
+    'in dev review' => 2,
+    'in qa review' => 3,
+    'ready to deploy' => 4
+  }
+
   LABELS = {
     nil => 'in development',
     'backlog' => 'backlog',
+    'development' => 'in development',
     'Dev Review' => 'in dev review',
     'QA Review' => 'in qa review',
     'merged' => 'ready to deploy'
