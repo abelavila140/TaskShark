@@ -82,7 +82,7 @@ class TasksController < ApplicationController
     return head :no_content, json: "No Task ID" unless @task_payload['id']
 
     # Attach all dependent PRs to body
-    dependencies = nil
+    dependencies = []
     if @task_payload['parent']
       parent_task = ClickUp.verify_task_id(@task_payload['parent'])
       subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])['tasks']
@@ -91,9 +91,13 @@ class TasksController < ApplicationController
         tags = subtask['tags'].map { |t| t['name'] }
         next unless (tags & ['frontend', 'api', 'legacy']).present?
 
+        github_url = subtask['custom_fields'].find { |f| f['name'] == 'GitHub PR' }['value']
 
+        dependencies << github_url if github_url.present?
       end
     end
+
+    dependencies_str = dependencies.present? ? "\r\nRelies on: #{dependencies.join(', ')}" : ''
 
     username = payload['pusher']['name']
     repo = payload['repository']['full_name']
@@ -103,7 +107,7 @@ class TasksController < ApplicationController
       title: @task_payload['name'],
       head: "#{organization}:#{branch}",
       base: 'master',
-      body: "[content]\r\n\r\nTasks Details: #{@task_payload['url']}"
+      body: "[content]\r\n#{dependencies_str}\r\n#Tasks Details: #{@task_payload['url']}"
     }
 
     logger.info "username: #{username}"
