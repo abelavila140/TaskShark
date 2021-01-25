@@ -81,6 +81,20 @@ class TasksController < ApplicationController
     logger.info "Task: #{@task_payload['id']}"
     return head :no_content, json: "No Task ID" unless @task_payload['id']
 
+    # Attach all dependent PRs to body
+    dependencies = nil
+    if @task_payload['parent']
+      parent_task = ClickUp.verify_task_id(@task_payload['parent'])
+      subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])['tasks']
+
+      subtasks.each do |subtask|
+        tags = subtask['tags'].map { |t| t['name'] }
+        next unless (tags & ['frontend', 'api', 'legacy']).present?
+
+        
+      end
+    end
+
     username = payload['pusher']['name']
     repo = payload['repository']['full_name']
     organization = repo.split('/').first

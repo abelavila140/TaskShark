@@ -41,6 +41,7 @@ class ClickUp
 
   def self.subtasks(list_id, task_id)
     response = request(:get, "list/#{list_id}/task?parent=#{task_id}")
+    Rails.logger.debug "LIST: #{list_id}"
     JSON.parse(response.body)
   rescue
     {}
