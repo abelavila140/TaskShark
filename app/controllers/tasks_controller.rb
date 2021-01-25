@@ -127,10 +127,8 @@ class TasksController < ApplicationController
 
     def task_payload(branch, is_push=false)
       branch_task_id = payload['pull_request']['title'].split('|').last&.strip
-      logger.debug "|PIPE #{branch_task_id}~"
       task = ClickUp.verify_task_id(branch_task_id)
-      logger.debug " This is it : #{task['id']}"
-      return if task.present?
+      return task if task.present?
 
       branch_task_id = branch.split('-').last
       task = ClickUp.verify_task_id(branch_task_id)
