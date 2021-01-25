@@ -63,12 +63,9 @@ class TasksController < ApplicationController
       previous_position = status_position
     end
 
+    status = ClickUp::STATUSES.invert[parent_status_position]
     logger.info "MOVE PARENT POSITION? #{parent_status_position}"
-    ClickUp.move_task(
-      parent_task['id'],
-      fetch_username,
-      ClickUp::STATUSES.invert[parent_status_position]
-    )
+    ClickUp.move_task(parent_task['id'], fetch_username, ClickUp::LABELS.invert[status])
 
     head :ok, json: "Status Changed"
   end
