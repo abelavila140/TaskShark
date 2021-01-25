@@ -91,7 +91,7 @@ class TasksController < ApplicationController
         tags = subtask['tags'].map { |t| t['name'] }
         next unless (tags & ['frontend', 'api', 'legacy']).present?
 
-        
+
       end
     end
 
@@ -126,7 +126,7 @@ class TasksController < ApplicationController
     end
 
     def task_payload(branch, is_push=false)
-      branch_task_id = payload['pull_request']['title'].split('|').last.strip
+      branch_task_id = payload['pull_request']['title'].split('|').last&.strip
       task = ClickUp.verify_task_id(branch_task_id)
       return if task.present?
 
