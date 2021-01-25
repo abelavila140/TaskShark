@@ -130,9 +130,11 @@ class TasksController < ApplicationController
     end
 
     def task_payload(branch, is_push=false)
-      branch_task_id = payload['pull_request']['title'].split('|').last&.strip
-      task = ClickUp.verify_task_id(branch_task_id)
-      return task if task.present?
+      if payload['pull_request']
+        branch_task_id = payload['pull_request']['title'].split('|').last&.strip
+        task = ClickUp.verify_task_id(branch_task_id)
+        return task if task.present?
+      end
 
       branch_task_id = branch.split('-').last
       task = ClickUp.verify_task_id(branch_task_id)
