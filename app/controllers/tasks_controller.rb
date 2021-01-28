@@ -49,10 +49,14 @@ class TasksController < ApplicationController
     parent_task = ClickUp.verify_task_id(@task_payload['parent'])
     subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])['tasks']
 
-    parent_status_position = ClickUp::STATUSES[parent_task['status']['status']]
+    parent_status = parent_task['status']['status']
+    parent_status_position = ClickUp::STATUSES[parent_status]
     previous_position = nil
+    qa_subtask = nil
+
     subtasks.each do |subtask|
       tags = subtask['tags'].map { |t| t['name'] }
+      qa_subtask = subtask if tags.include?('qa review')
       next unless (tags & ['frontend', 'api', 'legacy', 'migration']).present?
 
       status_position = ClickUp::STATUSES[subtask['status']['status']]
@@ -63,10 +67,18 @@ class TasksController < ApplicationController
       previous_position = status_position
     end
 
+    qa_status = qa_subtask['status']['status']
+
     status = ClickUp::STATUSES.invert[parent_status_position]
+    if status == 'in qa review' && qa_status != status
+      ClickUp.move_task(qa_subtask['id'], fetch_username, 'QA Review')
+    elsif parent_status == 'in qa review' && status != parent_status && qa_status == 'in qa review'
+      ClickUp.move_task(qa_subtask['id'], fetch_username, 'backlog')
+    end
+
     logger.info "MOVE PARENT POSITION? #{parent_status_position}"
-    return head :ok if parent_task['status']['status'] == status
-    
+    return head :ok if parent_status == status
+
     ClickUp.move_task(parent_task['id'], fetch_username, ClickUp::LABELS.invert[status])
 
     head :ok, json: "Status Changed"
