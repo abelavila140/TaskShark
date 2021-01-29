@@ -67,6 +67,7 @@ class TasksController < ApplicationController
     end
 
     Rails.logger.debug dependencies.inspect
+    Rails.logger.debug update_dependencies.inspect
 
     # split GH body by breaks
     if update_dependencies
