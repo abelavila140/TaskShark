@@ -157,7 +157,7 @@ class TasksController < ApplicationController
     organization = repo.split('/').first
 
     body = {
-      title: @task_payload['name'],
+      title: @task_payload['parent'] ? parent_task['name'] : @task_payload['name'],
       head: "#{organization}:#{branch}",
       base: 'master',
       body: "[content]\r\n\r\nTasks Details: #{@task_payload['url']}#{dependencies_str}"
