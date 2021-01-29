@@ -52,6 +52,10 @@ class TasksController < ApplicationController
     update_dependencies = false
     subtasks.each do |subtask|
       tags = subtask['tags'].map { |t| t['name'] }
+      Rails.logger.debug "TAGS:"
+      Rails.logger.debug tags.inspect
+      Rails.logger.debug "SUB ID: TASKID"
+      Rails.logger.debug "#{subtask['id']} : #{task_id}"
       next unless (tags & ['frontend', 'api', 'legacy']).present? && subtask['id'] != task_id
 
       github_url = subtask['custom_fields'].find { |f| f['name'] == 'GitHub PR' }['value']
@@ -61,6 +65,8 @@ class TasksController < ApplicationController
         update_dependencies = true
       end
     end
+
+    Rails.logger.debug dependencies.inspect
 
     # split GH body by breaks
     if update_dependencies
