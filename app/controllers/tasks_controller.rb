@@ -90,7 +90,9 @@ class TasksController < ApplicationController
       body = {
         body: body_breaks.join("\r\n")
       }
-      Github.update_pull_request(payload['number'], repo, username, body)
+      logger.debug body.inspect
+      a = Github.update_pull_request(payload['number'], repo, username, body)
+      logger.debug a.inspect
     end
 
     logger.info "LETS MOVE SOME STUFF!"
