@@ -22,13 +22,13 @@ class TasksController < ApplicationController
     labels = payload['pull_request']['labels'] || []
     github_url = payload['pull_request']['html_url']
     pr_state = payload['pull_request']['state'].to_sym
+    github_body = payload['pull_request']['body']
     status = nil
 
     if action == :closed
       status = 'merged'
     else
       return head :no_content if pr_state == :closed
-
       labels.each { |label| status = label['name'] if label_in_hash?(label['name']) }
     end
 
@@ -40,14 +40,53 @@ class TasksController < ApplicationController
     ClickUp.move_task(task_id, fetch_username, status) unless current_status == status
     ClickUp.attach_github_url(task_id, fetch_username, github_url) unless attached_pr?
 
-    # Check if all subtasks are in QA review
+    # di extra stuffs when task is a subtask
     label_names = labels.map { |l| l['name'] }
     return head :ok unless @task_payload['parent']
 
-    logger.info "LETS MOVE SOME STUFF!"
-
+    # Attach all dependent PRs to body
     parent_task = ClickUp.verify_task_id(@task_payload['parent'])
     subtasks = ClickUp.subtasks(parent_task['list']['id'], parent_task['id'])['tasks']
+
+    dependencies = []
+    update_dependencies = false
+    subtasks.each do |subtask|
+      tags = subtask['tags'].map { |t| t['name'] }
+      next unless (tags & ['frontend', 'api', 'legacy']).present? || subtask['id'] != task_id
+
+      github_url = subtask['custom_fields'].find { |f| f['name'] == 'GitHub PR' }['value']
+
+      if github_url.present? && !github_body.include?(github_url)
+        dependencies << github_url
+        update_dependencies = true
+      end
+    end
+
+    # split GH body by breaks
+    if update_dependencies
+      body_breaks = github_body.split(/\r\n/)
+      has_previous_dependencies = github_body.include?('Relies on:')
+      dependencies_str = "Relies on: #{dependencies.join(', ')}"
+
+      body_breaks.map! do |str|
+        if has_previous_dependencies && str.include?('Relies on:')
+          dependencies_str
+        elsif str.include?('Tasks Details:') && !has_previous_dependencies
+          "#{dependencies_str}\r\n#{str}"
+        else
+          str
+        end
+      end
+
+      username = payload['pull_request']['user']['login']
+      repo = payload['repository']['full_name']
+      body = {
+        body: body_breaks.join("\r\n")
+      }
+      Github.update_pull_request(payload['number'], repo, username, body)
+    end
+
+    logger.info "LETS MOVE SOME STUFF!"
 
     parent_status = parent_task['status']['status']
     parent_status_position = ClickUp::STATUSES[parent_status]
@@ -121,7 +160,7 @@ class TasksController < ApplicationController
       title: @task_payload['name'],
       head: "#{organization}:#{branch}",
       base: 'master',
-      body: "[content]\r\n#{dependencies_str}\r\nTasks Details: #{@task_payload['url']}"
+      body: "[content]\r\n\r\nTasks Details: #{@task_payload['url']}#{dependencies_str}"
     }
 
     logger.info "username: #{username}"
