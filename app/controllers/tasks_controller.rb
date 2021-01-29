@@ -52,7 +52,7 @@ class TasksController < ApplicationController
     update_dependencies = false
     subtasks.each do |subtask|
       tags = subtask['tags'].map { |t| t['name'] }
-      next unless (tags & ['frontend', 'api', 'legacy']).present? || subtask['id'] != task_id
+      next unless (tags & ['frontend', 'api', 'legacy']).present? && subtask['id'] != task_id
 
       github_url = subtask['custom_fields'].find { |f| f['name'] == 'GitHub PR' }['value']
 
