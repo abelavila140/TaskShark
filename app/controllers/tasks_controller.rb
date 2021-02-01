@@ -169,7 +169,7 @@ class TasksController < ApplicationController
       title: @task_payload['parent'] ? parent_task['name'] : @task_payload['name'],
       head: "#{organization}:#{branch}",
       base: 'master',
-      body: "[content]\r\n\r\nTasks Details: #{@task_payload['url']}#{dependencies_str}"
+      body: "[content]\r\n#{dependencies_str}\r\nTasks Details: #{@task_payload['url']}"
     }
 
     logger.info "username: #{username}"
