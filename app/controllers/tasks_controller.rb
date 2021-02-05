@@ -60,9 +60,9 @@ class TasksController < ApplicationController
 
       github_url = subtask['custom_fields'].find { |f| f['name'] == 'GitHub PR' }['value']
 
-      if github_url.present? && !github_body.include?(github_url)
+      if github_url.present?
         dependencies << github_url
-        update_dependencies = true
+        update_dependencies = true unless github_body.include?(github_url)
       end
     end
 
@@ -91,7 +91,7 @@ class TasksController < ApplicationController
         body: body_breaks.join("\r\n")
       }
       logger.debug body.inspect
-      # a = Github.update_pull_request(payload['number'], repo, username, body)
+      a = Github.update_pull_request(payload['number'], repo, username, body)
       logger.debug a.inspect
     end
 
