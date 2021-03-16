@@ -26,7 +26,7 @@ class TasksController < ApplicationController
     status = nil
 
     tags = @task_payload['tags'].map { |t| t['name'] }
-    if action == :closed && tags.include? 'migration'
+    if action == :closed && tags.include?('migration')
       status = 'closed'
     elsif action == :closed
       status = 'merged'
