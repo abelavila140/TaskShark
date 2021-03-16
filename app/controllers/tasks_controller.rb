@@ -25,7 +25,10 @@ class TasksController < ApplicationController
     github_body = payload['pull_request']['body']
     status = nil
 
-    if action == :closed
+    tags = @task_payload['tags'].map { |t| t['name'] }
+    if action == :closed && tags.include? 'migration'
+      status = 'closed'
+    elsif action == :closed
       status = 'merged'
     else
       return head :no_content if pr_state == :closed

@@ -15,7 +15,8 @@ class ClickUp
     'development' => 'in development',
     'Dev Review' => 'in dev review',
     'QA Review' => 'in qa review',
-    'merged' => 'ready to deploy'
+    'merged' => 'ready to deploy',
+    'closed' => 'Closed'
   }
 
   USERS = {
