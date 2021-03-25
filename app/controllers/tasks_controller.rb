@@ -167,9 +167,13 @@ class TasksController < ApplicationController
     username = payload['pusher']['name']
     repo = payload['repository']['full_name']
     organization = repo.split('/').first
+    title = @task_payload['parent'] ? parent_task['name'] : @task_payload['name']
+
+    tags = @task_payload['tags'].map { |t| t['name'] }
+    title = "[mig] #{title}" if tags.include?('migration')
 
     body = {
-      title: @task_payload['parent'] ? parent_task['name'] : @task_payload['name'],
+      title: title,
       head: "#{organization}:#{branch}",
       base: 'master',
       body: "[content]\r\n#{dependencies_str}\r\nTasks Details: #{@task_payload['url']}"
