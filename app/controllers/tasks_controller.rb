@@ -111,6 +111,8 @@ class TasksController < ApplicationController
       next unless (tags & ['frontend', 'api', 'legacy', 'migration']).present?
 
       status_position = ClickUp::STATUSES[subtask['status']['status']]
+      logger.info "TASK: #{tags.join(',')}"
+      logger.info "Position: #{status_position}"
       if previous_position.nil? || status_position < previous_position
         parent_status_position = status_position
       end
@@ -121,6 +123,9 @@ class TasksController < ApplicationController
     qa_status = qa_subtask['status']['status']
 
     status = ClickUp::STATUSES.invert[parent_status_position]
+    logger.info "STAUTUS: #{status}"
+    logger.info "Parent STAUTUS: #{parent_status}"
+    logger.info "QA STAUTUS: #{qa_status}"
     if status == 'in qa review' && qa_status != status
       ClickUp.move_task(qa_subtask['id'], fetch_username, 'QA Review')
     elsif parent_status == 'in qa review' && status != parent_status && qa_status == 'in qa review'
