@@ -3,8 +3,7 @@ class Github
     'abelavila140' => 'ABEL',
     'bzuch' => 'BRENT',
     'raywagner88' => 'RAY',
-    'suttonal' => 'AMY',
-    'bradleyaellis' => 'BRAD'
+    'kfindall' => 'KAMI',
   }
 
   def self.create_pull_request(repo, username, body={})
