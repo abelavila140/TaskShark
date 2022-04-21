@@ -27,6 +27,8 @@ class ClickUp
     'kinginmn' => 'GRETCHEN',
     'dcoxjr' => 'DOUG',
     'mclark-syc' => 'MARY',
+    'BrettAshEllis' => 'BRETT',
+    'ThomMcCoppin' => 'THOMAS',
     'default' => 'ABEL'
   }
 

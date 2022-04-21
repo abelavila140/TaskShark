@@ -4,6 +4,8 @@ class Github
     'bzuch' => 'BRENT',
     'raywagner88' => 'RAY',
     'kfindall' => 'KAMI',
+    'BrettAshEllis' => 'BRETT',
+    'ThomMcCoppin' => 'THOMAS'
   }
 
   def self.create_pull_request(repo, username, body={})
