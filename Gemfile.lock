@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/schneider7/GitHooks
+  revision: e12c8a889006a08a5d34ddab5425fd2a308c92f3
+  specs:
+    git_hooks (0.1.0)
+      rails (~> 5.2.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -151,6 +158,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.1.0)
   byebug
+  git_hooks!
   listen (>= 3.0.5, < 3.2)
   pg
   puma (~> 3.11)
